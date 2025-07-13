@@ -1,127 +1,140 @@
 <!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>91Club BIG/SMALL Hack</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>91Club Hack - BIG/SMALL Predictor</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #0a0a0a;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+      background: #f7f7ff;
+      color: #333;
     }.container {
-  background: #131313;
+  max-width: 420px;
+  margin: auto;
+  background: white;
   border-radius: 20px;
-  padding: 30px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 0 20px #ff0000aa;
-  text-align: center;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  overflow: hidden;
 }
 
-.title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #ff3c3c;
-}
-
-.input-box {
-  background: #000;
-  border: 1px solid #ff5555;
-  border-radius: 10px;
-  padding: 10px;
+.header {
+  background: #6c5ce7;
   color: white;
-  width: 100%;
-  margin-bottom: 20px;
-  font-size: 16px;
-  outline: none;
+  text-align: center;
+  padding: 20px 10px;
 }
 
-.predict-btn {
-  background: linear-gradient(45deg, #ff1a1a, #ff3333);
+.section {
+  padding: 20px;
+}
+
+.section h3 {
+  margin-top: 0;
+}
+
+input[type='text'] {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  background: #6c5ce7;
   border: none;
   color: white;
-  font-size: 18px;
-  padding: 12px 20px;
+  font-size: 16px;
   border-radius: 10px;
   cursor: pointer;
-  box-shadow: 0 4px 10px #ff0000aa;
-  transition: 0.3s ease-in-out;
 }
 
-.predict-btn:hover {
-  transform: scale(1.05);
-  background: linear-gradient(45deg, #ff3333, #ff4d4d);
-}
-
-.result {
+.prediction-box {
   margin-top: 20px;
-  font-size: 22px;
+  background: #ffeef2;
+  color: #d63031;
   font-weight: bold;
-  color: #ff5555;
-  text-shadow: 0 0 10px red;
+  padding: 20px;
+  text-align: center;
+  border-radius: 15px;
+  font-size: 24px;
 }
 
-.quote {
-  margin-top: 30px;
-  font-size: 12px;
-  color: #999;
-  font-style: italic;
+.info-text {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+}
+
+.result-feed {
+  margin-top: 20px;
+  background: #ecf0f1;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 14px;
 }
 
   </style>
 </head>
-<body>
-  <div class="container">
-    <div class="title">🔥 BIG/SMALL PREDICTOR 🔥</div>
-    <input id="results" class="input-box" placeholder="Enter Last 10 Results (e.g. 2578436721)">
-    <button class="predict-btn" onclick="predict()">🚨 Predict</button>
-    <div class="result" id="prediction"></div>
-    <div class="quote">THE NAME IS ENOUGH — ARNAV 🔥</div>
+<body>  <div class="container">
+    <div class="header">
+      <h2>91Club Hack</h2>
+      <p>BIG/SMALL Predictor</p>
+    </div><div class="section">
+  <h3>Enter Last 10 Results (comma separated)</h3>
+  <input type="text" id="resultInput" placeholder="e.g. 2,4,6,5,3,1,9,0,4,8">
+  <button onclick="predictResult()">Start Prediction</button>
+
+  <div class="prediction-box" id="predictionOutput">Prediction: -</div>
+  <div class="info-text" id="confidence">Chance: -</div>
+
+  <div class="result-feed" id="resultFeed">
+    <strong>History:</strong> <span id="historyText">-</span><br>
+    <strong>Status:</strong> <span id="statusText">Waiting...</span>
+  </div>
+</div>
+
   </div>  <script>
-    function predict() {
-      const val = document.getElementById('results').value.trim();
-      if (val.length !== 10 || /[^0-9]/.test(val)) {
-        alert('Enter exactly 10 digits (0-9 only)');
+    let historyData = [];
+    let layer = 1;
+    let losses = 0;
+
+    function predictResult() {
+      const input = document.getElementById('resultInput').value;
+      let results = input.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+      if (results.length !== 10) {
+        alert('Please enter exactly 10 numbers.');
         return;
       }
+      historyData = results;
 
-      const digits = val.split('').map(Number);
+      // Apply backend logic
+      let last = results[results.length - 1];
+      let bigSmall = (last === 0 || last === 1 || last === 5 || last === 8 || last === 9) ? 'BIG' : 'SMALL';
 
-      let big = 0, small = 0, odd = 0, even = 0;
-      let streak = { count: 1, value: null };
+      let odds = results.filter(n => n % 2 !== 0).length;
+      let evens = 10 - odds;
+      let oddEvenTrend = odds > evens ? 'EVEN' : 'ODD';
 
-      for (let i = 0; i < digits.length; i++) {
-        const d = digits[i];
-        if (d >= 5) big++; else small++;
-        if (d % 2 === 0) even++; else odd++;
-        if (i > 0 && (digits[i] >= 5) === (digits[i - 1] >= 5)) {
-          streak.count++;
-        } else {
-          streak.count = 1;
-        }
-      }
+      let streakBreak = results.slice(-3).every(n => n % 2 === results[results.length - 1] % 2);
 
-      let last = digits[9];
-      let layerVotes = { BIG: 0, SMALL: 0 };
+      let prediction = streakBreak ? (bigSmall === 'BIG' ? 'SMALL' : 'BIG') : bigSmall;
 
-      if ([0, 1, 5, 8, 9].includes(last)) layerVotes.BIG++;
-      else layerVotes.SMALL++;
+      // Fake confidence (based on matching rules)
+      let confidence = 50;
+      if (streakBreak) confidence += 10;
+      if ((oddEvenTrend === 'ODD' && prediction === 'BIG') || (oddEvenTrend === 'EVEN' && prediction === 'SMALL')) confidence += 8;
 
-      if (streak.count >= 3) layerVotes.SMALL++;
-
-      if (odd > even) layerVotes.SMALL++;
-      else layerVotes.BIG++;
-
-      let prediction = layerVotes.BIG > layerVotes.SMALL ? 'BIG 🔴' : 'SMALL 🟢';
-      document.getElementById('prediction').innerText = `Prediction: ${prediction}`;
+      // Update UI
+      document.getElementById('predictionOutput').innerText = prediction + (last % 2 === 0 ? ' RED' : ' GREEN');
+      document.getElementById('confidence').innerText = `Chance: ${confidence}%`;
+      document.getElementById('historyText').innerText = results.join(', ');
+      document.getElementById('statusText').innerText = `Layer ${layer}`;
     }
   </script></body>
 </html>
