@@ -1,125 +1,127 @@
 <!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>BIG/SMALL Hack - Sniper-X Logic</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>91Club BIG/SMALL Hack</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0d0d0d;
-      color: #fff;
       margin: 0;
       padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-    .container {
-      max-width: 420px;
-      background: #1a1a1a;
-      padding: 24px;
-      margin: 30px auto;
-      border-radius: 16px;
-      box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-    }
-    h1 {
-      text-align: center;
-      font-size: 22px;
-      margin-bottom: 20px;
-      text-shadow: 0 0 10px red;
-    }
-    label {
-      display: block;
-      margin: 12px 0 6px;
-      color: #ccc;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      font-size: 16px;
-    }
-    button {
-      background: red;
-      color: white;
-      font-weight: bold;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      width: 100%;
-      margin-top: 20px;
-      cursor: pointer;
-    }
-    .result-box {
-      margin-top: 20px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      color: #00ff88;
-      text-shadow: 0 0 10px #00ff88;
-    }
-    .quote {
-      margin-top: 25px;
-      text-align: center;
-      color: #888;
-      font-style: italic;
-    }
+      justify-content: center;
+      min-height: 100vh;
+    }.container {
+  background: #131313;
+  border-radius: 20px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 20px #ff0000aa;
+  text-align: center;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #ff3c3c;
+}
+
+.input-box {
+  background: #000;
+  border: 1px solid #ff5555;
+  border-radius: 10px;
+  padding: 10px;
+  color: white;
+  width: 100%;
+  margin-bottom: 20px;
+  font-size: 16px;
+  outline: none;
+}
+
+.predict-btn {
+  background: linear-gradient(45deg, #ff1a1a, #ff3333);
+  border: none;
+  color: white;
+  font-size: 18px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px #ff0000aa;
+  transition: 0.3s ease-in-out;
+}
+
+.predict-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(45deg, #ff3333, #ff4d4d);
+}
+
+.result {
+  margin-top: 20px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #ff5555;
+  text-shadow: 0 0 10px red;
+}
+
+.quote {
+  margin-top: 30px;
+  font-size: 12px;
+  color: #999;
+  font-style: italic;
+}
+
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🔥 BIG/SMALL PREDICTOR 🔥</h1><label for="lastResults">Enter Last 10 Results (e.g. 1 4 7 9...):</label>
-<input type="text" id="lastResults" placeholder="e.g. 2 5 7 8 4 3 6 7 2 1">
-
-<button onclick="predictNext()">🔮 Predict</button>
-
-<div class="result-box" id="prediction"></div>
-<div class="quote">THE NAME IS ENOUGH — ARNAV 🔥</div>
-
+    <div class="title">🔥 BIG/SMALL PREDICTOR 🔥</div>
+    <input id="results" class="input-box" placeholder="Enter Last 10 Results (e.g. 2578436721)">
+    <button class="predict-btn" onclick="predict()">🚨 Predict</button>
+    <div class="result" id="prediction"></div>
+    <div class="quote">THE NAME IS ENOUGH — ARNAV 🔥</div>
   </div>  <script>
-    function predictNext() {
-      const input = document.getElementById('lastResults').value.trim();
-      const lastResults = input.split(/\s+/).map(Number);
-
-      if (lastResults.length < 10 || lastResults.some(isNaN)) {
-        alert("Please enter 10 valid numbers (0–9). Use spaces to separate.");
+    function predict() {
+      const val = document.getElementById('results').value.trim();
+      if (val.length !== 10 || /[^0-9]/.test(val)) {
+        alert('Enter exactly 10 digits (0-9 only)');
         return;
       }
 
-      let bigCount = 0, smallCount = 0, evenCount = 0, oddCount = 0;
-      let lastDigitRule = '';
+      const digits = val.split('').map(Number);
 
-      lastResults.forEach(n => {
-        if (n >= 5) bigCount++; else smallCount++;
-        if (n % 2 === 0) evenCount++; else oddCount++;
-      });
+      let big = 0, small = 0, odd = 0, even = 0;
+      let streak = { count: 1, value: null };
 
-      // Layer 1: Last Digit Rule
-      const lastDigit = lastResults[lastResults.length - 1];
-      if ([0,1,5,8,9].includes(lastDigit)) lastDigitRule = 'BIG';
-      else lastDigitRule = 'SMALL';
+      for (let i = 0; i < digits.length; i++) {
+        const d = digits[i];
+        if (d >= 5) big++; else small++;
+        if (d % 2 === 0) even++; else odd++;
+        if (i > 0 && (digits[i] >= 5) === (digits[i - 1] >= 5)) {
+          streak.count++;
+        } else {
+          streak.count = 1;
+        }
+      }
 
-      // Layer 2: Streak Watchdog (last 3 same = flip)
-      const last3 = lastResults.slice(-3).map(n => n >= 5 ? 'BIG' : 'SMALL');
-      const same = last3.every(v => v === last3[0]);
-      const streakSuggest = same ? (last3[0] === 'BIG' ? 'SMALL' : 'BIG') : null;
+      let last = digits[9];
+      let layerVotes = { BIG: 0, SMALL: 0 };
 
-      // Layer 3: Odd/Even Counter
-      const oddEvenSuggest = oddCount > evenCount ? 'SMALL' : 'BIG';
+      if ([0, 1, 5, 8, 9].includes(last)) layerVotes.BIG++;
+      else layerVotes.SMALL++;
 
-      // Failsafe (more SMALLs in history = flip to BIG)
-      const fallback = smallCount > bigCount ? 'BIG' : 'SMALL';
+      if (streak.count >= 3) layerVotes.SMALL++;
 
-      // Voting Mechanism
-      const votes = [lastDigitRule, streakSuggest, oddEvenSuggest, fallback];
-      const result = votes.filter(v => v !== null);
-      const bigVotes = result.filter(v => v === 'BIG').length;
-      const smallVotes = result.filter(v => v === 'SMALL').length;
+      if (odd > even) layerVotes.SMALL++;
+      else layerVotes.BIG++;
 
-      const prediction = bigVotes > smallVotes ? 'BIG' : 'SMALL';
-
-      document.getElementById("prediction").innerText = `Prediction: ${prediction}`;
+      let prediction = layerVotes.BIG > layerVotes.SMALL ? 'BIG 🔴' : 'SMALL 🟢';
+      document.getElementById('prediction').innerText = `Prediction: ${prediction}`;
     }
   </script></body>
 </html>
